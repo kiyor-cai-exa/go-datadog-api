@@ -10,6 +10,7 @@ package datadog
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -113,9 +114,13 @@ func (client *Client) DeleteDowntime(id int) error {
 }
 
 // GetDowntimes returns a slice of all downtimes.
-func (client *Client) GetDowntimes() ([]Downtime, error) {
+func (client *Client) GetDowntimes(currentOnly bool) ([]Downtime, error) {
 	var out reqDowntimes
-	if err := client.doJsonRequest("GET", "/v1/downtime", nil, &out.Downtimes); err != nil {
+	v := url.Values{}
+	if currentOnly {
+		v.Add("current_only", "true")
+	}
+	if err := client.doJsonRequest("GET", "/v1/downtime?"+v.Encode(), nil, &out.Downtimes); err != nil {
 		return nil, err
 	}
 	return out.Downtimes, nil
