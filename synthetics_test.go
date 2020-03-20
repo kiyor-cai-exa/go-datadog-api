@@ -117,6 +117,14 @@ func TestGetSyntheticsTestApi(t *testing.T) {
 		t.Fatalf("expect options.follow_redirects %v. Got %v", expectedFollowRedirects, followRedirects)
 	}
 
+	expectedRetry := Retry{Count: Int(1), Interval: Int(10)}
+	if retry := options.GetRetry(); *retry.Count != *expectedRetry.Count {
+		t.Fatalf("expect options.retry.Count %+v. Got %+v", expectedRetry.Count, retry.Count)
+	}
+	if retry := options.GetRetry(); *retry.Interval != *expectedRetry.Interval {
+		t.Fatalf("expect options.retry.Interval %+v. Got %+v", expectedRetry.Interval, retry.Interval)
+	}
+
 	locations := c.Locations
 	expectedLocationsCnt := 1
 	if cnt := len(locations); cnt != expectedLocationsCnt {
@@ -249,6 +257,11 @@ func TestGetSyntheticsTestBrowser(t *testing.T) {
 	expectedDeviceId := "laptop_large"
 	if deviceId := deviceIds[0]; deviceId != expectedDeviceId {
 		t.Fatalf("expect device_id %s. Got %s", expectedDeviceId, deviceId)
+	}
+
+	expectedRenotifyInterval := 1600
+	if renotifyInterval := options.MonitorOptions.GetRenotifyInterval(); renotifyInterval != expectedRenotifyInterval {
+		t.Fatalf("expect renotify_interval %d. Got %d", expectedRenotifyInterval, renotifyInterval)
 	}
 
 	locations := c.Locations

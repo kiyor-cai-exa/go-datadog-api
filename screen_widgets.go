@@ -165,7 +165,7 @@ type Widget struct {
 	// For Timeseries, TopList, EventTimeline, EvenStream, AlertGraph, CheckStatus, ServiceSummary, LogStream widgets
 	Time *Time `json:"time,omitempty"`
 
-	// For Timeseries, QueryValue, HostMap, Change, Toplist, Process widgets
+	// For Timeseries, QueryValue, QueryTable, HostMap, Change, Toplist, Process widgets
 	TileDef *TileDef `json:"tile_def,omitempty"`
 
 	// For FreeText widget
@@ -180,7 +180,7 @@ type Widget struct {
 	// AlertGraph widget
 	VizType *string `json:"viz_type,omitempty"`
 
-	// For AlertValue, QueryValue, FreeText, Note widgets
+	// For AlertValue, QueryValue, QueryTable, FreeText, Note widgets
 	TextAlign *string `json:"text_align,omitempty"`
 
 	// For FreeText, Note widgets
@@ -190,12 +190,15 @@ type Widget struct {
 	AlertID     *int  `json:"alert_id,omitempty"`
 	AutoRefresh *bool `json:"auto_refresh,omitempty"`
 
-	// For Timeseries, QueryValue, Toplist widgets
+	// For Timeseries, QueryValue, QueryTable, Toplist widgets
 	Legend     *bool   `json:"legend,omitempty"`
 	LegendSize *string `json:"legend_size,omitempty"`
 
 	// For EventTimeline, EventStream, Hostmap, LogStream widgets
 	Query *string `json:"query,omitempty"`
+
+	// For EventTimeline, EventStream
+	TagsExecution *string `json:"tags_execution,omitempty"`
 
 	// For Image, IFrame widgets
 	URL *string `json:"url,omitempty"`
@@ -243,6 +246,8 @@ type Widget struct {
 	ManageStatusTitleSize  *string `json:"titleSize,omitempty"`
 	ManageStatusTitleAlign *string `json:"titleAlign,omitempty"`
 	Params                 *Params `json:"params,omitempty"`
+	ShowLastTriggered      *bool   `json:"show_last_triggered,omitempty"`
+	SummaryType            *string `json:"summary_type,omitempty"`
 
 	// For LogStream widget
 	Columns *string `json:"columns,omitempty"`

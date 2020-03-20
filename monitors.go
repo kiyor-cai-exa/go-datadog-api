@@ -191,9 +191,20 @@ func (client *Client) GetMonitorsByTags(tags []string) ([]Monitor, error) {
 	return client.GetMonitorsWithOptions(MonitorQueryOpts{Tags: tags})
 }
 
+// GetMonitorsByMonitorTags retrieves monitors by a slice of monitor tags
+func (client *Client) GetMonitorsByMonitorTags(tags []string) ([]Monitor, error) {
+	return client.GetMonitorsWithOptions(MonitorQueryOpts{MonitorTags: tags})
+}
+
 // DeleteMonitor removes a monitor from the system
 func (client *Client) DeleteMonitor(id int) error {
 	return client.doJsonRequest("DELETE", fmt.Sprintf("/v1/monitor/%d", id),
+		nil, nil)
+}
+
+// ForceDeleteMonitor removes a monitor from the system, even if it's linked to SLOs or group monitors
+func (client *Client) ForceDeleteMonitor(id int) error {
+	return client.doJsonRequest("DELETE", fmt.Sprintf("/v1/monitor/%d?force=true", id),
 		nil, nil)
 }
 

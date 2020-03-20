@@ -52,12 +52,23 @@ type SyntheticsAssertion struct {
 }
 
 type SyntheticsOptions struct {
-	TickEvery          *int     `json:"tick_every,omitempty"`
-	FollowRedirects    *bool    `json:"follow_redirects,omitempty"`
-	MinFailureDuration *int     `json:"min_failure_duration,omitempty"`
-	MinLocationFailed  *int     `json:"min_location_failed,omitempty"`
-	DeviceIds          []string `json:"device_ids,omitempty"`
-	AcceptSelfSigned   *bool    `json:"accept_self_signed,omitempty"`
+	TickEvery          *int            `json:"tick_every,omitempty"`
+	FollowRedirects    *bool           `json:"follow_redirects,omitempty"`
+	MinFailureDuration *int            `json:"min_failure_duration,omitempty"`
+	MinLocationFailed  *int            `json:"min_location_failed,omitempty"`
+	DeviceIds          []string        `json:"device_ids,omitempty"`
+	AcceptSelfSigned   *bool           `json:"accept_self_signed,omitempty"`
+	Retry              *Retry          `json:"retry,omitempty"`
+	MonitorOptions     *MonitorOptions `json:"monitor_options,omitempty"`
+}
+
+type MonitorOptions struct {
+	RenotifyInterval *int `json:"renotify_interval,omitempty"`
+}
+
+type Retry struct {
+	Count    *int `json:"count,omitempty"`
+	Interval *int `json:"interval,omitempty"`
 }
 
 type SyntheticsUser struct {
@@ -142,7 +153,7 @@ func (client *Client) UpdateSyntheticsTest(publicId string, syntheticsTest *Synt
 	return &out, nil
 }
 
-// PauseSyntheticsTest set a test status to live
+// PauseSyntheticsTest set a test status to paused
 func (client *Client) PauseSyntheticsTest(publicId string) (*bool, error) {
 	payload := ToggleStatus{NewStatus: String("paused")}
 	out := Bool(false)
