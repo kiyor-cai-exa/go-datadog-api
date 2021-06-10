@@ -1,0 +1,24 @@
+# github.com/cenkalti/backoff v1.0.1-0.20161020194410-b02f2bbce11d
+## explicit
+github.com/cenkalti/backoff
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/gomodule/redigo v1.8.4
+## explicit
+github.com/gomodule/redigo/redis
+# github.com/kiyor/env v0.0.3
+## explicit
+github.com/kiyor/env
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.5.1
+## explicit
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+github.com/stretchr/testify/suite
+# github.com/zorkian/go-datadog-api v2.30.0+incompatible
+## explicit
+github.com/zorkian/go-datadog-api
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2

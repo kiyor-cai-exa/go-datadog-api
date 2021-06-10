@@ -77,7 +77,7 @@ func (d *Downtime) DowntimeType() DowntimeType {
 
 // reqDowntimes retrieves a slice of all Downtimes.
 type reqDowntimes struct {
-	Downtimes []Downtime `json:"downtimes,omitempty"`
+	Downtimes []*Downtime `json:"downtimes,omitempty"`
 }
 
 // CreateDowntime adds a new downtme to the system. This returns a pointer
@@ -114,7 +114,7 @@ func (client *Client) DeleteDowntime(id int) error {
 }
 
 // GetDowntimes returns a slice of all downtimes.
-func (client *Client) GetDowntimes(currentOnly bool) ([]Downtime, error) {
+func (client *Client) GetDowntimes(currentOnly bool) ([]*Downtime, error) {
 	var out reqDowntimes
 	v := url.Values{}
 	if currentOnly {

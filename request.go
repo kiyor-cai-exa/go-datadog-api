@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -186,6 +187,24 @@ func (client *Client) doJsonRequestUnredacted(method, api string,
 // doRequestWithRetries performs an HTTP request repeatedly for maxTime or until
 // no error and no acceptable HTTP response code was returned.
 func (client *Client) doRequestWithRetries(req *http.Request, maxTime time.Duration) (*http.Response, error) {
+	key := "datadog:GET:" + req.URL.String()
+	if req.Method == "GET" {
+		if val, ttl, ok := client.Redis.GetWithTTL(key); ok {
+			tb := val[:10]
+			timestamp, _ := strconv.ParseInt(string(tb), 10, 64)
+			// if not expired
+			if client.Ttl > 0 && time.Now().Unix() < timestamp+int64(client.Ttl) {
+				var resp http.Response
+				resp.StatusCode = 200
+				resp.Body = ioutil.NopCloser(bytes.NewReader(val[10:]))
+				resp.Header = make(http.Header)
+				resp.Header.Set("X-Redis-Cache", "HIT")
+				resp.Header.Set("X-Ttl", fmt.Sprint(ttl))
+				return &resp, nil
+			}
+		}
+	}
+
 	var (
 		err  error
 		resp *http.Response
@@ -213,6 +232,27 @@ func (client *Client) doRequestWithRetries(req *http.Request, maxTime time.Durat
 		if err != nil {
 			return err
 		}
+
+		// redis cache
+		if req.Method == "GET" && resp.StatusCode == 200 {
+			defer resp.Body.Close()
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			timestamp := time.Now().Unix()
+			tb := []byte(fmt.Sprintf("%v", timestamp))
+			nb := append(tb, b...)
+			err = client.Redis.SetWithTTL(key, nb, client.Ttl)
+			if err != nil {
+				return err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewReader(b))
+			resp.Header.Set("X-Redis-Cache", "HIT")
+			resp.Header.Set("X-Ttl", fmt.Sprint(client.Ttl))
+		}
+		resp.Header.Set("X-Redis-Cache", "MISS")
+		//
 
 		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			// 2xx all done
@@ -259,6 +299,9 @@ func (client *Client) createRequest(method, api string, reqbody interface{}) (*h
 	for k, v := range client.ExtraHeader {
 		req.Header.Add(k, v)
 	}
+
+	// 	command, _ := http2curl.GetCurlCommand(req)
+	// 	log.Println(command.String())
 
 	return req, nil
 }

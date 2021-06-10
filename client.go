@@ -34,6 +34,11 @@ type Client struct {
 	rateLimitingStats map[string]RateLimit
 	// Mutex to protect the rate limiting map.
 	m sync.Mutex
+
+	// redis
+	Redis *RedisPool
+
+	Ttl int
 }
 
 type RateLimit struct {
@@ -51,7 +56,7 @@ type valid struct {
 
 // NewClient returns a new datadog.Client which can be used to access the API
 // methods. The expected argument is the API key.
-func NewClient(apiKey, appKey string) *Client {
+func NewClient(apiKey, appKey string, cacheTtl int) *Client {
 	baseUrl := os.Getenv("DATADOG_HOST")
 	if baseUrl == "" {
 		baseUrl = "https://api.datadoghq.com"
@@ -65,6 +70,7 @@ func NewClient(apiKey, appKey string) *Client {
 		RetryTimeout:      time.Duration(60 * time.Second),
 		rateLimitingStats: make(map[string]RateLimit),
 		ExtraHeader:       make(map[string]string),
+		Redis:             Redis,
 	}
 }
 
@@ -99,7 +105,7 @@ func (client *Client) Validate() (bool, error) {
 		return false, err
 	}
 	req.Header.Set("DD-API-KEY", client.apiKey)
-	if (client.appKey != "") {
+	if client.appKey != "" {
 		req.Header.Set("DD-APPLICATION-KEY", client.appKey)
 	}
 
